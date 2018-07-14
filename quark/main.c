@@ -22,23 +22,16 @@
 typedef uint64_t u64;
 typedef uint8_t u8;
 
+
+// the quark function definition
 int quark( u8 *out, const u8 *in, u64 inlen );
 
 
-// test quark hashing
-int test_vectors()
-{
-  u8 out[MAXDIGEST];
-
-  // quark( out, NULL, 0 );
-
-  // return memcmp( out, digest_empty, sizeof( digest_empty ) );
-}
-
-
+// the main function
 int main(int argc, char* argv[])
 {
   // essential variables
+  u8 out[MAXDIGEST];
   long file_size;
   int i;
 
@@ -46,8 +39,7 @@ int main(int argc, char* argv[])
   if(argc > 1)
   {
     // create the file pointer
-    FILE *file_pointer;
-    file_pointer = fopen(argv[1], "rb");
+    FILE *file_pointer = fopen(argv[1], "rb");
 
     // find the file length
     fseek(file_pointer, 0, SEEK_END);
@@ -55,17 +47,22 @@ int main(int argc, char* argv[])
     fseek(file_pointer, 0, SEEK_SET);
 
     // read the file contents
-    char *file_contents = malloc(file_size + 1);
+    u8 *file_contents = malloc(file_size + 1);
     fread(file_contents, file_size, 1, file_pointer);
+    fclose(file_pointer);
 
-    // convert contents to integer array
-    u8 *digest_input = malloc(file_size + 1);
-    for(i = 0; i < file_size; ++i)
+    // debug
+    u8 dummy_data[5] = {0x03, 0x25, 0x62, 0x14, 0xb9};
+    quark(out, dummy_data, 5);
+
+    // try to create hash
+    // quark(out, file_contents, file_size + 1);
+    
+    for(i=0; i<MAXDIGEST; ++i)
     {
-      digest_input = file_contents;
-      ++file_contents;
-      ++digest_input;
+        printf("%d", out[i]);
     }
+    printf("\n");
   }
 
   return 0;
