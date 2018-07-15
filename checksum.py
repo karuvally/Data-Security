@@ -5,6 +5,7 @@
 # import serious stuff
 import zlib
 import argparse
+import sys
 
 
 # read and return list of files
@@ -15,11 +16,25 @@ def read_file_list(file_list_path):
         file_list_file.close()
     except:
         print("error: unable to load list of files")
+        sys.exit(0)
 
     return list_of_files
 
 
 # generate checksum of files
+def generate_checksum(list_of_files):
+    checksums = {}
+
+    for file_path in list_of_files:
+        try:
+            input_file = open(file_path, "rb")
+            input_file_data = input_file.read()
+
+            checksums.update({file_path: zlib.crc32(input_file_data)})
+            input_file.close()
+        except:
+            print("error: unable to read", file_path)
+            sys.exit(1)
 
 
 # the main function
@@ -34,7 +49,7 @@ def main():
     list_of_files = read_file_list(arguments.file_list)
 
     # generate crc of each file
-    crc_list = []
+    checksums = generate_checksum(list_of_files)
 
     # check if file already has hash in database
     # if not, create the entry in db
